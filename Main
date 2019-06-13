@@ -1,0 +1,52 @@
+import pygame
+import math
+
+SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 700
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+pygame.init()
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("My Game")
+
+clock = pygame.time.Clock()
+
+#pygame.mouse.set_visible(False)
+class Leg():
+    global screen
+    length = None
+    end_point = None
+    start_point = None
+    angle = None
+    def __init__(self, length):
+        self.length = length
+    def draw(self, start_point, angle):
+        self.angle = angle
+        y = self.length * math.sin(self.deg_to_rad(angle))
+        x = math.sqrt(self.length ** 2 - y ** 2)
+        self.start_point = start_point
+        self.end_point = (start_point[0] + x, start_point[1] - y)
+        pygame.draw.lines(screen, BLACK, False, [self.end_point, self.start_point], 5)
+
+    def deg_to_rad(self, deg):
+        return deg * math.pi / 180
+    def rad_to_deg(self, rad):
+        return rad * 180 / math.pi
+
+done = False
+first_leg = Leg(200)
+second_leg = Leg(100)
+while not done:
+    mouse_pos = pygame.mouse.get_pos()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+    
+    screen.fill(WHITE)
+    first_leg.draw((250, 250), 45)
+    second_leg.draw(first_leg.end_point, first_leg.angle + 45)
+    pygame.display.flip()
+    clock.tick(200)
+
+pygame.quit()
