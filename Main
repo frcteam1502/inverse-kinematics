@@ -1,10 +1,14 @@
 import pygame
 import math
 
-SCREEN_HEIGHT = 500
+SCREEN_HEIGHT = 700
 SCREEN_WIDTH = 700
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+STARTING_LOCATION = (350, 350)
+LEG1_LENGTH = 200
+LEG2_LENGTH = 100
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -34,9 +38,33 @@ class Leg():
     def rad_to_deg(self, rad):
         return rad * 180 / math.pi
 
+
+class End():
+    global screen
+    global STARTING_LOCATION
+    pos = None
+    bound = None
+
+    def __init__(self, bound):
+        self.bound = bound
+
+    def draw(self, pos):
+        mouse_x, mouse_y = pos
+        right_x = mouse_x if max(mouse_x, STARTING_LOCATION[0]) == mouse_x else STARTING_LOCATION[0]
+        wrong_x = mouse_x if right_x != mouse_x else STARTING_LOCATION[0]
+        right_y = mouse_y if max(mouse_y, STARTING_LOCATION[1]) == mouse_y else STARTING_LOCATION[1]
+        wrong_y = mouse_y if right_y != mouse_y else STARTING_LOCATION[1]
+        if not((right_x - wrong_x) ** 2 + (right_y - wrong_y) ** 2 > self.bound ** 2):
+            pygame.draw.circle(screen, BLACK, (int(mouse_x), int(mouse_y)), 5)
+
+    def bound_circle(self):
+        pygame.draw.circle(screen, GREEN, STARTING_LOCATION, self.bound, 5)
+
 done = False
-first_leg = Leg(200)
-second_leg = Leg(100)
+first_leg = Leg(LEG1_LENGTH)
+second_leg = Leg(LEG2_LENGTH)
+end = End(LEG1_LENGTH + LEG2_LENGTH)
+
 while not done:
     mouse_pos = pygame.mouse.get_pos()
     for event in pygame.event.get():
@@ -44,8 +72,11 @@ while not done:
             done = True
     
     screen.fill(WHITE)
-    first_leg.draw((250, 250), 45)
-    second_leg.draw(first_leg.end_point, first_leg.angle + 45)
+    
+    end.bound_circle()
+    end.draw(mouse_pos)
+    first_leg.draw(STARTING_LOCATION, 0)
+    second_leg.draw(first_leg.end_point, first_leg.angle)
     pygame.display.flip()
     clock.tick(200)
 
