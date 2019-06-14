@@ -43,7 +43,7 @@ class End():
         self.bound = bound
 
     def draw(self, pos):
-        mouse_x, mouse_y = PermissionError
+        mouse_x, mouse_y = pos
         if not((STARTING_LOCATION[0] - mouse_x) ** 2 + (STARTING_LOCATION[1] - mouse_y) ** 2 > self.bound ** 2):
             pygame.draw.circle(screen, BLACK, (int(mouse_x), int(mouse_y)), 5)
 
@@ -86,21 +86,17 @@ while not done:
     print(mouse_pos)
     x_pos, y_pos = mouse_pos
     end_hyp = math.sqrt(x_pos ** 2 + y_pos ** 2)
-    x = x_pos / end_hyp * min(end_hyp, LEG1_LENGTH + LEG2_LENGTH - 0.00001)
-    y = y_pos / end_hyp * min(end_hyp, LEG1_LENGTH + LEG2_LENGTH - 0.00001)
+    x = x_pos / end_hyp * min(end_hyp, 2 * LEG1_LENGTH - 0.00001)
+    y = y_pos / end_hyp * min(end_hyp, 2 * LEG1_LENGTH - 0.00001)
     hyp = math.sqrt(x ** 2 + y ** 2)
     d = x ** 2 + y ** 2
-    print(d)
-    print((-d ** 2))
-    print(-2 * d)
-    print(LEG1_LENGTH + LEG2_LENGTH)
-    print((-(d ** 2))/ (-2 * d * LEG1_LENGTH + LEG2_LENGTH))
-    angle = math.acos((-(d ** 2))/ (-2 * d * LEG1_LENGTH + LEG2_LENGTH))
+    angle = math.acos(((-(d ** 2))/ (-2 * d * 2 * LEG1_LENGTH))/1000)
     d1 = x / d
     d2 = y / d
     d3 = LEG2_LENGTH * (d1 * math.cos(angle) - d2 * math.sin(angle))
     d4 = LEG2_LENGTH * (d1 * math.sin(angle) - d2 * math.sin(angle))
-
+    print(d3,d4)
+    print(x,y)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
