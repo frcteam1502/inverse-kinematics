@@ -26,11 +26,11 @@ class Leg():
     def __init__(self, length):
         self.length = length
     def draw(self, start_point, angle):
-        #self.angle = angle
-        #y = self.length * math.sin(math.radians(angle))
-        #x = math.sqrt(self.length ** 2 - y ** 2)
-        #self.start_point = start_point
-        #self.end_point = (start_point[0] + x, start_point[1] - y)
+        self.angle = angle
+        y = self.length * math.sin(math.radians(angle))
+        x = math.sqrt(self.length ** 2 - y ** 2)
+        self.start_point = start_point
+        self.end_point = (start_point[0] + x, start_point[1] - y)
         pygame.draw.lines(screen, BLACK, False, [self.end_point, self.start_point], 5)
 
 class End():
@@ -38,6 +38,7 @@ class End():
     global STARTING_LOCATION
     pos = None
     bound = None
+    outside = False
 
     def __init__(self, bound):
         self.bound = bound
@@ -46,6 +47,8 @@ class End():
         mouse_x, mouse_y = pos
         if not((STARTING_LOCATION[0] - mouse_x) ** 2 + (STARTING_LOCATION[1] - mouse_y) ** 2 > self.bound ** 2):
             pygame.draw.circle(screen, BLACK, (int(mouse_x), int(mouse_y)), 5)
+            self.outside = False
+        else: self.outside = True
 
     def bound_circle(self):
         pygame.draw.circle(screen, GREEN, STARTING_LOCATION, self.bound, 5)
@@ -62,50 +65,50 @@ first_leg = Leg(LEG1_LENGTH)
 second_leg = Leg(LEG2_LENGTH)
 end = End(LEG1_LENGTH + LEG2_LENGTH)
 line = 0
-
-
-x_pos = None
-y_pos = None
-obj_1 = None
-obj_2 = None
-end_hyp = None
-hyp = None
-x = None
-y = None
-d = None
-d1 = None
-d2 = None
-angle = None
-d3 = None
-d4 = None
-
-pygame.mouse.set_visible(False)
+static = False
+y_back = False
+y_forward = False
+x_back = False
+x_forward = False
+end_loc = [0,0]
 while not done:
-    
     mouse_pos = pygame.mouse.get_pos()
-    print(mouse_pos)
-    x_pos, y_pos = mouse_pos
-    end_hyp = math.sqrt(x_pos ** 2 + y_pos ** 2)
-    x = x_pos / end_hyp * min(end_hyp, 2 * LEG1_LENGTH - 0.00001)
-    y = y_pos / end_hyp * min(end_hyp, 2 * LEG1_LENGTH - 0.00001)
-    hyp = math.sqrt(x ** 2 + y ** 2)
-    d = x ** 2 + y ** 2
-    angle = math.acos(((-(d ** 2))/ (-2 * d * 2 * LEG1_LENGTH))/1000)
-    d1 = x / d
-    d2 = y / d
-    d3 = LEG2_LENGTH * (d1 * math.cos(angle) - d2 * math.sin(angle))
-    d4 = LEG2_LENGTH * (d1 * math.sin(angle) - d2 * math.sin(angle))
-    print(d3,d4)
-    print(x,y)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if mouse_pos[0] < 650 and mouse_pos[0] > 600 and mouse_pos[1] < 650 and mouse_pos[1] > 600:
+                    static = not static
+        if event.type == pygame.KEYDOWN and static:
+            if event.key == pygame.K_UP: y_forward = True
+            if event.key == pygame.K_DOWN: y_back = True
+            if event.key == pygame.K_RIGHT: x_forward = True
+            if event.key == pygame.K_LEFT: x_back = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP: y_forward = False
+            if event.key == pygame.K_DOWN: y_back = False
+            if event.key == pygame.K_RIGHT: x_forward = False
+            if event.key == pygame.K_LEFT: x_back = False
     screen.fill(WHITE)
+    if end.outside or static: pygame.mouse.set_visible(True)
+    else: pygame.mouse.set_visible(False)
+
+    if y_forward: end_loc[1] -= 1
+    if y_back: end_loc[1] += 1
+    if x_forward: end_loc[0] += 1
+    if x_back: end_loc[0] -= 1
+
+    pygame.draw.rect(screen, GREEN, (600, 600, 50, 50))
     end.bound_circle()
-    end.draw(mouse_pos)
-    first_leg.end_point = (d3, d4)
-    second_leg.end_point = (x,y)
+    print(end_loc)
+    if not static:
+        end.draw(mouse_pos)
+        y_forward = False
+        y_back = False
+        x_forward = False
+        x_back = False
+    else: end.draw((STARTING_LOCATION[0] + end_loc[0], STARTING_LOCATION[1] + end_loc[1]))
     first_leg.draw(STARTING_LOCATION, 0)
     second_leg.draw(first_leg.end_point, first_leg.angle)
     pygame.display.flip()
