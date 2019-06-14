@@ -1,0 +1,49 @@
+D4 = L * (
+    D1 * sin(A)
+    -
+    D2 * cos(A)
+)
+
+D3 = L * (
+            D1 * cos(A)
+            -
+            D2 * sin(A)
+        )
+
+D1 = X / D
+
+D2 = y /D
+
+A = arccos(
+	(
+		(-D^2)
+		/(-2DL)
+	)
+)
+
+D = sqrt(
+	x^2
+	 + 
+	y^2
+)
+x = 
+	X(1) / D(5)
+	* 
+    min(
+		D(5), 2L - 0.00001
+		)
+y = 
+	Y(1) / D(5)
+	* 
+    min(
+		D5, 2L - 0.00001
+	)
+D(5) = sqrt(
+		X(1)^2
+		+
+		Y(1)^2
+)
+
+X(1) = x location
+Y(1) = y location
+L = length of legs
