@@ -1,3 +1,22 @@
+a = a(1) + a(2)
+	a(1) = tan^-1((y(0) - A)/x(0))
+		y(0) = y location
+		x(0) = x location
+		A = starting location on y axis
+
+	a(2) = sin^-1( C * ( ( cos(`b) / d(1) ) ) )
+		C = length of leg2
+		`b = sin^-1( ( (y(0) - A)^2 + x(0)^2 - B^2 - C^2) / (2 * B * C))
+			y(0) = y location
+			A = starting location on y axis
+			x(0) = x location
+			B = length of leg1
+			C = length of leg2
+		d(1) = sqrt( (y(0) - A) ^ 2 + x(0)^2 )
+			y(0) = y location
+			A = starting location on y axis
+			x(0) = x location
+#same length
 D4 = L * (
     D1 * sin(A)
     -
