@@ -7,8 +7,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 STARTING_LOCATION = (350, 350)
-LEG1_LENGTH = 150
-LEG2_LENGTH = 150
+LEG1_LENGTH = 200
+LEG2_LENGTH = 100
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -34,8 +34,7 @@ class Leg():
         pygame.draw.lines(screen, BLACK, False, [self.end_point, self.start_point], 5)
 
 class End():
-    global screen
-    global STARTING_LOCATION
+    global screen,  STARTING_LOCATION, LEG1_LENGTH, LEG2_LENGTH
     pos = None
     bound = None
     outside = False
@@ -50,8 +49,11 @@ class End():
             self.outside = False
         else: self.outside = True
 
-    def bound_circle(self):
+    def max_bound(self):
         pygame.draw.circle(screen, GREEN, STARTING_LOCATION, self.bound, 5)
+    
+    def min_bound(self):
+        pygame.draw.circle(screen, GREEN, STARTING_LOCATION, LEG1_LENGTH - LEG2_LENGTH, 1)
 
 def draw_lines():
     for line in range(SCREEN_WIDTH):
@@ -100,8 +102,8 @@ while not done:
     if x_back: end_loc[0] -= 1
 
     pygame.draw.rect(screen, GREEN, (600, 600, 50, 50))
-    end.bound_circle()
-    print(end_loc)
+    end.max_bound()
+    end.min_bound()
     if not static:
         end.draw(mouse_pos)
         y_forward = False
@@ -110,7 +112,8 @@ while not done:
         x_back = False
     else: end.draw((STARTING_LOCATION[0] + end_loc[0], STARTING_LOCATION[1] + end_loc[1]))
     first_leg.draw(STARTING_LOCATION, 0)
-    second_leg.draw(first_leg.end_point, first_leg.angle)
+    print(first_leg.angle - 100)
+    second_leg.draw(first_leg.end_point, first_leg.angle + 170)
     pygame.display.flip()
     clock.tick(200)
 
