@@ -112,7 +112,6 @@ while not done:
         x_back = False
     else: end.draw((STARTING_LOCATION[0] + end_loc[0], STARTING_LOCATION[1] + end_loc[1]))
     first_leg.draw(STARTING_LOCATION, 0)
-    print(first_leg.angle - 100)
     second_leg.draw(first_leg.end_point, first_leg.angle + 170)
     pygame.display.flip()
     clock.tick(200)
