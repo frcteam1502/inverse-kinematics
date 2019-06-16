@@ -65,7 +65,7 @@ while not done:
         pygame.draw.line(screen, BLACK, math_to_screen_coords(ORIGIN), elbow_point_screen)
         pygame.draw.line(screen, BLACK, elbow_point_screen, mouse_pos)
     except (ValueError, ZeroDivisionError) as e:
-        pass#print(e)
+        print(e)
     pygame.display.flip()
     clock.tick(200)
 
