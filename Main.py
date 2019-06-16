@@ -1,129 +1,71 @@
-import pygame
 import math
+import pygame
 
 SCREEN_HEIGHT = 700
 SCREEN_WIDTH = 700
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
+BLUE = (50, 175, 255)
 STARTING_LOCATION = (350, 350)
+ORIGIN = (0, 0)
 LEG1_LENGTH = 200
 LEG2_LENGTH = 100
+
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("My Game")
+pygame.display.set_caption('Inverse kinematics demo')
 
 clock = pygame.time.Clock()
-
-#pygame.mouse.set_visible(False)
-class Leg():
-    global screen
-    length = None
-    end_point = None
-    start_point = None
-    angle = None
-    def __init__(self, length):
-        self.length = length
-    def draw(self, start_point, angle):
-        self.angle = angle
-        y = self.length * math.sin(math.radians(angle))
-        x = math.sqrt(self.length ** 2 - y ** 2)
-        self.start_point = start_point
-        self.end_point = (start_point[0] + x, start_point[1] - y)
-        pygame.draw.lines(screen, BLACK, False, [self.end_point, self.start_point], 5)
-
-class End():
-    global screen,  STARTING_LOCATION, LEG1_LENGTH, LEG2_LENGTH
-    pos = None
-    bound = None
-    outside = False
-
-    def __init__(self, bound):
-        self.bound = bound
-
-    def draw(self, pos):
-        mouse_x, mouse_y = pos
-        if not((STARTING_LOCATION[0] - mouse_x) ** 2 + (STARTING_LOCATION[1] - mouse_y) ** 2 > self.bound ** 2):
-            pygame.draw.circle(screen, BLACK, (int(mouse_x), int(mouse_y)), 5)
-            self.outside = False
-        else: self.outside = True
-
-    def max_bound(self):
-        pygame.draw.circle(screen, GREEN, STARTING_LOCATION, self.bound, 5)
-    
-    def min_bound(self):
-        pygame.draw.circle(screen, GREEN, STARTING_LOCATION, LEG1_LENGTH - LEG2_LENGTH, 1)
-
-def draw_lines():
-    for line in range(SCREEN_WIDTH):
-        if line % 10 == 0:
-            pygame.draw.lines(screen, BLACK, False, [(0, line), (SCREEN_WIDTH, line)], 1)
-    for line in range(SCREEN_HEIGHT):
-        if line % 10 == 0:
-            pygame.draw.lines(screen, BLACK, False, [(line, 0), (line, SCREEN_HEIGHT)], 1)
 done = False
-first_leg = Leg(LEG1_LENGTH)
-second_leg = Leg(LEG2_LENGTH)
-end = End(LEG1_LENGTH + LEG2_LENGTH)
-line = 0
-static = False
-y_back = False
-y_forward = False
-x_back = False
-x_forward = False
-end_loc = [0,0]
+
+def screen_to_math_coords(coords):
+    return (coords[0] - STARTING_LOCATION[0], -(coords[1] - STARTING_LOCATION[1]))
+
+def math_to_screen_coords(coords):
+    return (STARTING_LOCATION[0] + coords[0], STARTING_LOCATION[1] - coords[1])
+
+
 while not done:
-    mouse_pos = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                if mouse_pos[0] < 650 and mouse_pos[0] > 600 and mouse_pos[1] < 650 and mouse_pos[1] > 600:
-                    static = not static
-        if event.type == pygame.KEYDOWN and static:
-            if event.key == pygame.K_UP: y_forward = True
-            if event.key == pygame.K_DOWN: y_back = True
-            if event.key == pygame.K_RIGHT: x_forward = True
-            if event.key == pygame.K_LEFT: x_back = True
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_UP: y_forward = False
-            if event.key == pygame.K_DOWN: y_back = False
-            if event.key == pygame.K_RIGHT: x_forward = False
-            if event.key == pygame.K_LEFT: x_back = False
     screen.fill(WHITE)
-    if end.outside or static: pygame.mouse.set_visible(True)
-    else: pygame.mouse.set_visible(False)
 
-    if y_forward: end_loc[1] -= 1
-    if y_back: end_loc[1] += 1
-    if x_forward: end_loc[0] += 1
-    if x_back: end_loc[0] -= 1
+    mouse_pos = pygame.mouse.get_pos()
+    relative_mouse_pos = screen_to_math_coords(mouse_pos)
+    rel_mouse_x, rel_mouse_y = relative_mouse_pos
+    distance = math.sqrt(rel_mouse_x ** 2 + rel_mouse_y ** 2)
+    print('rel', relative_mouse_pos)
+    # Optional: constrain mouse coords to be within distance
+    MIN_DISTANCE = LEG1_LENGTH - LEG2_LENGTH
+    MAX_DISTANCE = LEG1_LENGTH + LEG2_LENGTH
+    distance_multiplier = 1
+    if distance > MAX_DISTANCE: distance_multiplier = MAX_DISTANCE / distance
+    if distance < MIN_DISTANCE: distance_multiplier = MIN_DISTANCE / distance
+    distance *= distance_multiplier
+    rel_mouse_x *= distance_multiplier
+    rel_mouse_y *= distance_multiplier
 
-    pygame.draw.rect(screen, GREEN, (600, 600, 50, 50))
-    end.max_bound()
-    end.min_bound()
-    first_leg.draw(STARTING_LOCATION, 0)
-    pygame.draw.circle(screen, GREEN, (int(first_leg.end_point[0]), int(first_leg.end_point[1])), LEG2_LENGTH, 1)
-    pygame.draw.circle(screen, GREEN, STARTING_LOCATION, LEG1_LENGTH, 1)
-    second_leg.draw(first_leg.end_point, first_leg.angle + 170)
-    if not static:
-        end.draw(mouse_pos)
-        y_forward = False
-        y_back = False
-        x_forward = False
-        x_back = False
-    else: end.draw((STARTING_LOCATION[0] + end_loc[0], STARTING_LOCATION[1] + end_loc[1]))
     # Math
-    a1 = math.atan((300 - STARTING_LOCATION[1]) / 200)
-    b = math.asin((
-        (300 - STARTING_LOCATION[1]) ** 2
-         + 200 ** 2 - LEG2_LENGTH ** 2) /
-         (2 * LEG1_LENGTH * LEG2_LENGTH))
-    d1 = math.sqrt((300 - STARTING_LOCATION[1]) ** 2 + 200 ** 2)
-    a2 = math.asin(LEG2_LENGTH  * (b / d1))
-    print(a1 + a2)
+    try:
+        a1 = math.atan2(rel_mouse_y, rel_mouse_x)
+        second_angle = math.asin((rel_mouse_y ** 2 + rel_mouse_x ** 2 - LEG1_LENGTH ** 2 - LEG2_LENGTH ** 2)
+                / 2 / LEG1_LENGTH / LEG2_LENGTH)
+        a2 = math.asin(LEG2_LENGTH * math.cos(second_angle) / distance)
+        first_angle = a1 + a2
+        print('First angle', first_angle)
+        print('Second angle', second_angle)
+
+        elbow_point = (LEG1_LENGTH * math.cos(first_angle), LEG1_LENGTH * math.sin(first_angle))
+        elbow_point_screen = math_to_screen_coords(elbow_point)
+
+        pygame.draw.circle(screen, BLUE, (int(elbow_point_screen[0]), int(elbow_point_screen[1])), LEG2_LENGTH, 1)
+        pygame.draw.circle(screen, BLUE, STARTING_LOCATION, LEG1_LENGTH, 1)
+        pygame.draw.line(screen, BLACK, math_to_screen_coords(ORIGIN), elbow_point_screen)
+        pygame.draw.line(screen, BLACK, elbow_point_screen, mouse_pos)
+    except (ValueError, ZeroDivisionError) as e:
+        pass#print(e)
     pygame.display.flip()
     clock.tick(200)
 
