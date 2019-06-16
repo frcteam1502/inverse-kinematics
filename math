@@ -1,17 +1,16 @@
 a = a(1) + a(2)
 	a(1) = tan^-1( (
-		mouse_pos[1] - STARTING_LOCATION
+		mouse_pos[1] - STARTING_LOCATION[1]
 		) / mouse_pos[0]
 	)
 	
 			mouse_pos[1] = y location
 			mouse_pos[0] = x location
-			STARTING_LOCATION = starting location on y axis
+			STARTING_LOCATION[1] = starting location on y axis
 
 	a(2) = sin^-1( 
-		LEG2_LENGTH * ( (
-			cos(`b) / d(1) 
-			) ) 
+		LEG2_LENGTH * 
+			(`b / d(1)) 
 		)
 			LEG2_LENGTH = length of leg2
 			`b = sin^-1( ( (

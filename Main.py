@@ -48,7 +48,7 @@ class End():
             pygame.draw.circle(screen, BLACK, (int(mouse_x), int(mouse_y)), 5)
             self.outside = False
         else: self.outside = True
-            
+
     def max_bound(self):
         pygame.draw.circle(screen, GREEN, STARTING_LOCATION, self.bound, 5)
     
@@ -115,6 +115,15 @@ while not done:
         x_forward = False
         x_back = False
     else: end.draw((STARTING_LOCATION[0] + end_loc[0], STARTING_LOCATION[1] + end_loc[1]))
+    # Math
+    a1 = math.atan((mouse_pos[1] - STARTING_LOCATION[1]) / mouse_pos[0])
+    b = math.asin((
+        (mouse_pos[1] - STARTING_LOCATION[1]) ** 2
+         + mouse_pos[0] ** 2 - LEG2_LENGTH ** 2) /
+         (2 * LEG1_LENGTH * LEG2_LENGTH))
+    d1 = math.sqrt((mouse_pos[1] - STARTING_LOCATION[1]) ** 2 + mouse_pos[0] ** 2)
+    a2 = math.asin(LEG2_LENGTH  * (b / d1))
+    print(a1 + a2)
     pygame.display.flip()
     clock.tick(200)
 
