@@ -116,12 +116,12 @@ while not done:
         x_back = False
     else: end.draw((STARTING_LOCATION[0] + end_loc[0], STARTING_LOCATION[1] + end_loc[1]))
     # Math
-    a1 = math.atan((mouse_pos[1] - STARTING_LOCATION[1]) / mouse_pos[0])
+    a1 = math.atan((300 - STARTING_LOCATION[1]) / 200)
     b = math.asin((
-        (mouse_pos[1] - STARTING_LOCATION[1]) ** 2
-         + mouse_pos[0] ** 2 - LEG2_LENGTH ** 2) /
+        (300 - STARTING_LOCATION[1]) ** 2
+         + 200 ** 2 - LEG2_LENGTH ** 2) /
          (2 * LEG1_LENGTH * LEG2_LENGTH))
-    d1 = math.sqrt((mouse_pos[1] - STARTING_LOCATION[1]) ** 2 + mouse_pos[0] ** 2)
+    d1 = math.sqrt((300 - STARTING_LOCATION[1]) ** 2 + 200 ** 2)
     a2 = math.asin(LEG2_LENGTH  * (b / d1))
     print(a1 + a2)
     pygame.display.flip()
