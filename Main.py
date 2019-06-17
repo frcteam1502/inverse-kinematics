@@ -41,6 +41,7 @@ while not done:
     MIN_DISTANCE = LEG1_LENGTH - LEG2_LENGTH
     MAX_DISTANCE = LEG1_LENGTH + LEG2_LENGTH
     distance_multiplier = 1
+    if distance == 0: distance = 1
     if distance > MAX_DISTANCE: distance_multiplier = MAX_DISTANCE / distance
     if distance < MIN_DISTANCE: distance_multiplier = MIN_DISTANCE / distance
     distance *= distance_multiplier
