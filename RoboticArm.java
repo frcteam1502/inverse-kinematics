@@ -1,13 +1,13 @@
 class RoboticArm{
     int[] origin;
-    int[] armPosition = {0,0};
-    int[] foreArmPosition = {0,0};
-    int armLength = 300;
-    int foreArmLength = 200;
-    int min = armLength - foreArmLength;
-    int max = armLength + foreArmLength;
-    public RoboticArm(int[] origin) {
+    int armLength, foreArmLength;
+    int min, max;
+    public RoboticArm(int[] origin, int armLength, int foreArmLength) {
         this.origin = origin;
+        this.armLength = armLength;
+        this.foreArmLength = foreArmLength;
+        min = armLength - foreArmLength;
+        max = armLength + foreArmLength;
     }
 
     public void run(int[] pos) {
